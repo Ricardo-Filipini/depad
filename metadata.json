@@ -1,0 +1,8 @@
+{
+  "name": "PAA Data Platform",
+  "description": "Uma plataforma integrada de inteligência de dados, legislação e governança para o Programa de Aquisição de Alimentos (PAA), potencializada por IA Gemini.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
