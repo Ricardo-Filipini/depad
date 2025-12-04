@@ -2,125 +2,136 @@ import React from 'react';
 
 export const Institutional: React.FC = () => {
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto animate-fade-in space-y-8">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto animate-fade-in space-y-10">
       
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-700 to-green-600 rounded-3xl p-8 md:p-12 text-white shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-10 -mb-10"></div>
-        
-        <div className="relative z-10">
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">
-            Departamento de Aquisição e Distribuição de Alimentos Saudáveis (DEPAD)
+      {/* Minimal Header */}
+      <div className="border-b border-gray-200 pb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="bg-green-100 text-green-700 p-2 rounded-lg material-icons-round">account_balance</span>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+            DEPAD
           </h1>
-          <p className="text-lg md:text-xl text-green-100 max-w-3xl leading-relaxed">
-            O coração operacional do Programa de Aquisição de Alimentos (PAA), transformando segurança alimentar em dados e cidadania.
+        </div>
+        <p className="text-gray-600 text-lg max-w-4xl">
+          Departamento de Aquisição e Distribuição de Alimentos Saudáveis: O "motor" logístico e de dados do PAA.
+        </p>
+      </div>
+
+      {/* Papel Institucional & Liderança */}
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="material-icons-round text-green-600">settings_applications</span>
+            Papel Institucional
+          </h2>
+          <p className="text-gray-600 leading-relaxed mb-4 text-sm">
+            O DEPAD atua na estrutura da Secretaria Nacional de Segurança Alimentar e Nutricional (SESAN). Ele é responsável não apenas pela logística de alimentos, mas pela <strong>gestão de convênios</strong>, <strong>pactuação de metas</strong> com entes federados e pela definição das <strong>regras de negócio</strong> que alimentam sistemas como o SISPAA.
           </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="material-icons-round text-blue-600">person</span>
+            Liderança Técnica
+          </h2>
+          <div className="flex gap-4 items-start">
+             <div className="flex-1">
+                <p className="text-gray-600 leading-relaxed text-sm mb-2">
+                  A continuidade administrativa é garantida por perfis técnicos como <strong>Paulo Sérgio Cândido Alves</strong>.
+                </p>
+                <div className="bg-blue-50 px-3 py-2 rounded-lg border border-blue-100 text-xs text-blue-800">
+                  <span className="font-semibold">Perfil:</span> Zootecnista (UFV) com atuação transversal em conselhos estratégicos (ANSN, CONAPE), garantindo a memória institucional e a estabilidade das regras de dados.
+                </div>
+             </div>
+          </div>
         </div>
       </div>
 
-      {/* Papel Institucional */}
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-          <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
-            <span className="material-icons-round text-2xl">account_balance</span>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Papel Institucional</h2>
-          <p className="text-gray-600 leading-relaxed mb-4">
-            O DEPAD atua como o "motor" logístico e administrativo da Secretaria Nacional de Segurança Alimentar e Nutricional (SESAN). Ele não apenas movimenta alimentos, mas orquestra uma complexa rede de informações que conecta a produção rural à vulnerabilidade social.
-          </p>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <span className="material-icons-round text-green-500 mt-1">check_circle</span>
-              <span className="text-gray-700">Gestão de convênios e pactuação de metas com estados e municípios.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="material-icons-round text-green-500 mt-1">check_circle</span>
-              <span className="text-gray-700">Definição de regras de negócio para sistemas como o SISPAA.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="material-icons-round text-green-500 mt-1">check_circle</span>
-              <span className="text-gray-700">Monitoramento da execução orçamentária e física.</span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-            <span className="material-icons-round text-2xl">psychology</span>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Liderança Técnica & Continuidade</h2>
-          <p className="text-gray-600 leading-relaxed mb-4">
-            A estabilidade de políticas complexas como o PAA depende de perfis técnicos altamente especializados. A figura de <strong className="text-gray-900">Paulo Sérgio Cândido Alves</strong> exemplifica a importância da "memória institucional".
-          </p>
-          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-            <h4 className="font-semibold text-blue-900 mb-2">Perfil Técnico</h4>
-            <p className="text-sm text-blue-800">
-              Zootecnista formado pela UFV, atua como uma "âncora de conhecimento" no DEPAD, garantindo que a tecnologia e os dados sirvam à realidade do campo, especialmente em momentos críticos como foi a pandemia de COVID-19.
+      {/* Technical Data Structure Section - NEW */}
+      <div className="bg-gray-50 rounded-2xl p-8 border border-gray-200">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <span className="material-icons-round text-gray-700">schema</span>
+              Estrutura de Dados Técnica
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Modelagem de entidades e atributos gerenciados pelo DEPAD no SISPAA e Data Warehouse.
             </p>
           </div>
+          <span className="hidden md:inline-block px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-mono text-gray-600">
+            Schema: OLTP &rarr; OLAP
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left text-gray-600">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-100 border-b border-gray-200">
+              <tr>
+                <th scope="col" className="px-6 py-3">Entidade de Dados</th>
+                <th scope="col" className="px-6 py-3">Atributos Chave</th>
+                <th scope="col" className="px-6 py-3">Fonte Primária</th>
+                <th scope="col" className="px-6 py-3">Papel no Modelo</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-100">
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 font-medium text-gray-900">Termo de Adesão</td>
+                <td className="px-6 py-4 font-mono text-xs">ID_Termo, NR_Edital, CD_IBGE, Status</td>
+                <td className="px-6 py-4"><span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">SISPAA</span></td>
+                <td className="px-6 py-4">Entidade Raiz (Parent). Define escopo territorial e legal.</td>
+              </tr>
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 font-medium text-gray-900">Proposta</td>
+                <td className="px-6 py-4 font-mono text-xs">ID_Proposta, Dt_Inicio, Dt_Fim, Meta_Fin</td>
+                <td className="px-6 py-4"><span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">SISPAA</span> / Conab</td>
+                <td className="px-6 py-4">Agregador de execução e planejamento tático.</td>
+              </tr>
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 font-medium text-gray-900">Fornecedor</td>
+                <td className="px-6 py-4 font-mono text-xs">NR_DAP/CAF, CPF, Sexo, Etnia</td>
+                <td className="px-6 py-4"><span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">MDA (Integração)</span></td>
+                <td className="px-6 py-4">Sujeito da política. Base para indicadores de inclusão (IN005, IN051).</td>
+              </tr>
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 font-medium text-gray-900">Produto</td>
+                <td className="px-6 py-4 font-mono text-xs">CD_Produto, Descricao, Categoria</td>
+                <td className="px-6 py-4"><span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Tabela Domínio</span></td>
+                <td className="px-6 py-4">Padronização semântica (ex: Macaxeira = Mandioca).</td>
+              </tr>
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 font-medium text-gray-900">Recebimento</td>
+                <td className="px-6 py-4 font-mono text-xs">ID_Recebimento, Dt_Entrega, Qtd_Real</td>
+                <td className="px-6 py-4"><span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">SISPAA (Operacional)</span></td>
+                <td className="px-6 py-4">Fato gerador financeiro. Prova de execução física.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Estrutura de Dados */}
-      <div className="bg-gray-900 rounded-3xl p-8 md:p-12 text-white shadow-xl">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-6">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Estrutura Técnica de Dados</h2>
-            <p className="text-gray-400">Do analógico ao "Gêmeo Digital" da política pública.</p>
-          </div>
-          <div className="flex gap-2">
-            <span className="px-4 py-2 bg-gray-800 rounded-full text-sm font-mono text-green-400 border border-gray-700">Teradata</span>
-            <span className="px-4 py-2 bg-gray-800 rounded-full text-sm font-mono text-blue-400 border border-gray-700">Python</span>
-            <span className="px-4 py-2 bg-gray-800 rounded-full text-sm font-mono text-purple-400 border border-gray-700">APIs</span>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-4 gap-6">
-          <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700 hover:border-green-500 transition-colors">
-            <div className="text-4xl mb-4">📄</div>
-            <h3 className="font-bold text-lg mb-2">1. Adesão</h3>
-            <p className="text-gray-400 text-sm">Gênese do dado. Instrumento jurídico que cria a "Tabela Pai" no sistema.</p>
-          </div>
-          <div className="hidden md:flex items-center justify-center text-gray-600">
-            <span className="material-icons-round text-3xl">arrow_forward</span>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700 hover:border-green-500 transition-colors">
-            <div className="text-4xl mb-4">🚜</div>
-            <h3 className="font-bold text-lg mb-2">2. Proposta</h3>
-            <p className="text-gray-400 text-sm">Planejamento. Validação de CPF/DAP e definição de produtos.</p>
-          </div>
-          <div className="hidden md:flex items-center justify-center text-gray-600">
-            <span className="material-icons-round text-3xl">arrow_forward</span>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700 hover:border-green-500 transition-colors">
-            <div className="text-4xl mb-4">📦</div>
-            <h3 className="font-bold text-lg mb-2">3. Recebimento</h3>
-            <p className="text-gray-400 text-sm">O evento físico vira digital. Ponto crítico de controle de qualidade.</p>
-          </div>
-          <div className="hidden md:flex items-center justify-center text-gray-600">
-            <span className="material-icons-round text-3xl">arrow_forward</span>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-2xl border border-gray-700 hover:border-green-500 transition-colors">
-            <div className="text-4xl mb-4">💰</div>
-            <h3 className="font-bold text-lg mb-2">4. Pagamento</h3>
-            <p className="text-gray-400 text-sm">Confirmação financeira. A "verdade única" para auditoria.</p>
-          </div>
-        </div>
-
-        <div className="mt-10 p-6 bg-gray-800 rounded-2xl border border-gray-700">
-          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-            <span className="material-icons-round text-yellow-500">warning</span>
-            Desafio de Interoperabilidade: MDS vs Conab
-          </h3>
-          <p className="text-gray-300 text-sm leading-relaxed mb-4">
-            Um dos maiores desafios técnicos é a coexistência de dois sistemas: o <strong>SISPAA</strong> (MDS) e o <strong>PAA Net</strong> (Conab). Historicamente operando em silos, a modernização busca a integração via <strong>APIs</strong> para substituir a troca manual de planilhas, garantindo uma visão nacional unificada e em tempo real.
+      {/* Logic & Workflow */}
+      <div className="grid md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-xl border border-gray-200">
+          <div className="text-purple-600 mb-2 material-icons-round">rule</div>
+          <h3 className="font-bold text-gray-900 mb-2">Regras de Validação</h3>
+          <p className="text-sm text-gray-600">
+            A "trava sistêmica" do Controle Social: O pagamento é bloqueado se não houver dados validados do Conselho (COMSEA) na tabela pai.
           </p>
-          <div className="flex gap-2">
-             <span className="text-xs bg-gray-900 px-2 py-1 rounded text-gray-400">Silos de Dados</span>
-             <span className="text-xs bg-gray-900 px-2 py-1 rounded text-gray-400">Latência</span>
-             <span className="text-xs bg-gray-900 px-2 py-1 rounded text-gray-400">Padronização Semântica</span>
-          </div>
+        </div>
+        <div className="bg-white p-6 rounded-xl border border-gray-200">
+          <div className="text-purple-600 mb-2 material-icons-round">sync_alt</div>
+          <h3 className="font-bold text-gray-900 mb-2">Interoperabilidade</h3>
+          <p className="text-sm text-gray-600">
+            Migração de troca de planilhas para APIs REST/JSON entre SISPAA (MDS) e PAA Net (Conab) para reduzir latência e erros.
+          </p>
+        </div>
+        <div className="bg-white p-6 rounded-xl border border-gray-200">
+          <div className="text-purple-600 mb-2 material-icons-round">analytics</div>
+          <h3 className="font-bold text-gray-900 mb-2">Analytics (Teradata)</h3>
+          <p className="text-sm text-gray-600">
+            Processamento massivo para cruzar milhões de CPFs do PAA com o CadÚnico e gerar o indicador de focalização (IN023).
+          </p>
         </div>
       </div>
 
