@@ -89,12 +89,18 @@ export const deleteFile = async (bucketName: string, fileName: string): Promise<
     // Ensure full path (if file is in a folder, fileName should include it)
     const path = fileName.startsWith('/') ? fileName.substring(1) : fileName;
     
-    const response = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucketName}/${path}`, {
+    // Use the batch delete endpoint which is generally more reliable and avoids URL encoding edge cases
+    // Endpoint: DELETE /storage/v1/object/{bucketName}
+    const response = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucketName}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${SUPABASE_KEY}`,
         'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        prefixes: [path]
+      })
     });
 
     return response.ok;

@@ -67,13 +67,15 @@ export const ImageStudio: React.FC = () => {
     if (!window.confirm("Tem certeza que deseja excluir esta imagem permanentemente?")) return;
 
     setDeletingId(file.id);
-    const fullPath = file.name.includes('/') ? file.name : `generated/${file.name}`;
+    
+    // Explicitly handle the path. The file name from listBucketFiles usually doesn't include the folder prefix if we listed inside it.
+    const fullPath = file.name.startsWith('generated/') ? file.name : `generated/${file.name}`;
     
     const success = await deleteFile('src', fullPath);
     if (success) {
       setGeneratedImages(prev => prev.filter(item => item.id !== file.id));
     } else {
-      alert("Erro ao excluir arquivo.");
+      alert("Erro ao excluir arquivo. Verifique o console.");
     }
     setDeletingId(null);
   };
@@ -189,7 +191,7 @@ export const ImageStudio: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {generatedImages.map((file) => {
-              const fullPath = file.name.includes('/') ? file.name : `generated/${file.name}`;
+              const fullPath = file.name.startsWith('generated/') ? file.name : `generated/${file.name}`;
               const url = getFileUrl('src', fullPath);
               const isInfo = file.name.includes('infographic');
               const isDeleting = deletingId === file.id;
