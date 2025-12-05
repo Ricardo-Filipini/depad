@@ -26,6 +26,7 @@ const getEnv = (key: string, viteKey: string) => {
 // Fallbacks Hardcoded (Safety Net)
 const FALLBACK_SUPABASE_URL = "https://xsfymwerlwsjofsrdpcb.supabase.co";
 const FALLBACK_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzZnltd2VybHdzam9mc3JkcGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NzI3NTMsImV4cCI6MjA4MDM0ODc1M30.DdvxmeUfdFueFyaj0Fl1x-2qGdDfYZrQ103POCHaMmY";
+const FALLBACK_GEMINI_KEY = "AIzaSyD6tCMVfpknIfCEFEihd2_Dc8b9eFU6zEA";
 
 // Exported Constants with Priority: Env Var -> Fallback
 export const SUPABASE_URL = getEnv('SUPABASE_URL', 'VITE_SUPABASE_URL') || FALLBACK_SUPABASE_URL;
@@ -36,7 +37,8 @@ export const GEMINI_API_KEY =
   getEnv('GEMINI_API_KEY', 'VITE_GEMINI_API_KEY') || 
   getEnv('API_KEY', 'VITE_GEMINI_KEY') || 
   // Fallback to process.env.API_KEY specifically for the Google IDX/Container environment if the helper missed it
-  (typeof process !== 'undefined' ? process.env.API_KEY : undefined);
+  (typeof process !== 'undefined' ? process.env.API_KEY : undefined) ||
+  FALLBACK_GEMINI_KEY;
 
 
 export const PAA_CONTENT: PAAInfo[] = [

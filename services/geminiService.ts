@@ -1,11 +1,20 @@
 import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_INSTRUCTION, GEMINI_API_KEY } from "../constants";
 
-// Initialize Gemini with the key from constants (which handles VITE_ env vars)
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+// Helper to get client safely without crashing app on load if key is missing
+const getClient = () => {
+    if (!GEMINI_API_KEY) {
+      console.warn("GEMINI_API_KEY is missing. AI features will not work.");
+      return null;
+    }
+    return new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+};
 
 export const sendMessage = async (message: string): Promise<string> => {
   try {
+    const ai = getClient();
+    if (!ai) return "Erro de configuração: Chave de API (GEMINI_API_KEY) não encontrada. Verifique as variáveis de ambiente.";
+
     // Optimization: gemini-2.5-flash is much faster and cheaper for chat interactions
     const chat = ai.chats.create({
       model: 'gemini-2.5-flash',
@@ -25,6 +34,9 @@ export const sendMessage = async (message: string): Promise<string> => {
 
 export const searchNews = async (topic: string): Promise<string> => {
   try {
+    const ai = getClient();
+    if (!ai) return "Erro: Chave de API não configurada.";
+
     // Optimization: gemini-2.5-flash is significantly faster for search grounding tasks
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -58,6 +70,9 @@ export const searchNews = async (topic: string): Promise<string> => {
 
 export const generateImage = async (prompt: string): Promise<string | null> => {
     try {
+        const ai = getClient();
+        if (!ai) return null;
+
         // We keep Pro for images as quality is paramount here, even if slightly slower
         const response = await ai.models.generateContent({
             model: 'gemini-3-pro-image-preview',
@@ -87,6 +102,9 @@ export const generateImage = async (prompt: string): Promise<string | null> => {
 
 export const generateCreativePrompt = async (): Promise<string> => {
   try {
+    const ai = getClient();
+    if (!ai) return "Brazilian family farmers harvesting fresh organic vegetables in a sunny field, high resolution, cinematic lighting, 8k.";
+
     // Flash is perfectly capable of generating prompts and is much faster
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
