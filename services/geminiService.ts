@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { SYSTEM_INSTRUCTION, GEMINI_API_KEY } from "../constants";
+import { SYSTEM_INSTRUCTION, GEMINI_API_KEY, PAA_CONTENT } from "../constants";
 
 // Helper to get client safely without crashing app on load if key is missing
 const getClient = () => {
@@ -100,42 +100,76 @@ export const generateImage = async (prompt: string): Promise<string | null> => {
     }
 };
 
-export const generateCreativePrompt = async (userTopic?: string): Promise<string> => {
-  const fallbacks = [
+export const generateCreativePrompt = async (userTopic?: string, mode: 'art' | 'infographic' = 'art'): Promise<string> => {
+  const artFallbacks = [
     "A futuristic digital dashboard displaying agricultural data maps of Brazil, glowing holographic interface, professional UX design, 8k resolution.",
     "Isometric 3D illustration of a farm connected to a cloud server, showing data flowing from vegetables to a database, colorful and clean.",
     "Portrait of a brazilian female farmer using a tablet in a corn field, golden hour lighting, national geographic style photography.",
-    "Abstract data visualization composed of fruits and vegetables forming a network graph, white background, minimalist design."
+  ];
+
+  const infoFallbacks = [
+    "A clean, flat design infographic showing the flow of food from farm to school, with arrows and icons. White background, vector style.",
+    "A mind map diagram showing 'PAA Data Governance' with nodes for 'MDS', 'Conab', and 'Teradata'. Professional corporate presentation style.",
+    "A timeline infographic illustrating the PAA Legislation history, minimal vector art, high contrast."
   ];
 
   try {
     const ai = getClient();
-    if (!ai) return fallbacks[0];
+    if (!ai) return mode === 'art' ? artFallbacks[0] : infoFallbacks[0];
 
-    // Build the instruction based on whether userTopic exists
-    const contextInstruction = userTopic 
-      ? `O usuário forneceu este tema específico: "${userTopic}". Crie um prompt visual baseado estritamente nisso, mas melhore a descrição artística.`
-      : `Escolha ALEATORIAMENTE um tema entre: Fluxo Logístico do DEPAD, Tecnologia de Dados, Leis/Governança, Agricultores Familiares ou Alimentos Frescos.`;
+    // Prepare context from PAA_CONTENT to help the model be specific
+    const platformContext = PAA_CONTENT.map(c => `${c.title}: ${c.description}`).join('; ');
+    
+    let systemInstruction = "";
+    let contextInstruction = "";
 
-    // Flash is perfectly capable of generating prompts and is much faster
+    if (mode === 'infographic') {
+      systemInstruction = `
+        Atue como um Especialista em Visualização de Dados e Design de Informação.
+        Sua missão é criar um prompt visual DETALHADO em INGLÊS para gerar um INFOGRÁFICO, MAPA MENTAL ou FLUXOGRAMA.
+        
+        O prompt deve instruir o gerador de imagem a:
+        1. Usar estilo "Flat Vector", "Clean Design" ou "Corporate Infographic".
+        2. Fundo branco ou neutro para legibilidade.
+        3. Representar visualmente conexões, setas, ícones e hierarquia.
+        4. Evitar excesso de texto, focando em "Visual Storytelling".
+        
+        Use este contexto técnico do PAA para enriquecer o prompt: ${platformContext}
+      `;
+      
+      contextInstruction = userTopic 
+        ? `Crie um prompt para um infográfico sobre: "${userTopic}".`
+        : `Escolha um destes temas técnicos para o infográfico: Fluxo de Dados (Adesão -> Pagamento), Marcos Legais do PAA, ou Governança de Dados (Teradata/SISPAA).`;
+    
+    } else {
+      // Art Mode
+      systemInstruction = `
+        Atue como um Diretor de Arte Criativo.
+        Sua missão é criar um prompt visual em INGLÊS para gerar uma imagem artística, fotografia ou ilustração 3D.
+        Estilos: Fotorealismo, 3D Pixar, Isométrico, Futurista ou Minimalista.
+      `;
+      
+      contextInstruction = userTopic 
+        ? `O usuário forneceu este tema: "${userTopic}". Crie uma descrição artística visualmente impactante.`
+        : `Escolha ALEATORIAMENTE um tema entre: Tecnologia no Campo, Agricultura Familiar Brasileira, ou Alimentos Frescos.`;
+    }
+
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: `
-        Atue como um Diretor de Arte Criativo para a plataforma de dados do PAA (Programa de Aquisição de Alimentos).
-        Sua missão é criar um prompt visual em INGLÊS para gerar uma imagem.
-
-        CONTEXTO:
+        ${systemInstruction}
+        
+        PEDIDO:
         ${contextInstruction}
-
-        DIRETRIZES DE ESTILO:
-        Escolha um estilo visual adequado (Fotorealismo, 3D Pixar, Isométrico, Futurista ou Minimalista).
-        Descreva a cena, a iluminação e o ângulo da câmera.
 
         RETORNE APENAS O PROMPT EM INGLÊS. NÃO ADICIONE NENHUM TEXTO ANTES OU DEPOIS.
       `,
     });
-    return response.text || fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    
+    return response.text || (mode === 'art' ? artFallbacks[0] : infoFallbacks[0]);
   } catch (error) {
-    return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    return mode === 'art' 
+      ? artFallbacks[Math.floor(Math.random() * artFallbacks.length)] 
+      : infoFallbacks[Math.floor(Math.random() * infoFallbacks.length)];
   }
 }
