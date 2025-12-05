@@ -1,20 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { searchNews } from '../services/geminiService';
+import { fetchLatestNewsFromDB, saveNewsToDB } from '../services/supabaseService';
+
+const NEWS_TOPIC_KEY = "PAA_GENERAL_UPDATE";
+const NEWS_SEARCH_PROMPT = "Programa de Aquisição de Alimentos PAA MDS agricultura familiar Brasil notícias recentes";
 
 export const NewsFeed: React.FC = () => {
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [source, setSource] = useState<'cache' | 'live'>('cache');
 
-  const fetchNews = async () => {
+  // Load from DB first
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setLoading(true);
+      const cachedNews = await fetchLatestNewsFromDB(NEWS_TOPIC_KEY);
+      
+      if (cachedNews) {
+        setContent(cachedNews.content);
+        setLastUpdated(new Date(cachedNews.created_at).toLocaleString('pt-BR'));
+        setSource('cache');
+        setLoading(false);
+      } else {
+        // If no cache exists, fetch live automatically
+        handleLiveUpdate();
+      }
+    };
+    loadInitialData();
+  }, []);
+
+  const handleLiveUpdate = async () => {
     setLoading(true);
-    const result = await searchNews("Programa de Aquisição de Alimentos PAA MDS agricultura familiar Brasil notícias recentes");
+    setSource('live');
+    
+    // 1. Fetch from Gemini
+    const result = await searchNews(NEWS_SEARCH_PROMPT);
     setContent(result);
+    setLastUpdated('Agora (Não salvo)');
+
+    // 2. Save to Supabase (Fire and forget logic usually, but we await here for UI consistency)
+    if (result && !result.includes("Erro")) {
+        const saved = await saveNewsToDB(NEWS_TOPIC_KEY, result);
+        if (saved) {
+            setLastUpdated(new Date().toLocaleString('pt-BR'));
+            setSource('live'); // It's live data that is now stored
+        }
+    }
+    
     setLoading(false);
   };
-
-  useEffect(() => {
-    fetchNews();
-  }, []);
 
   // Simple Markdown Parser to React Elements
   const renderMarkdown = (text: string) => {
@@ -45,18 +80,33 @@ export const NewsFeed: React.FC = () => {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 text-white shadow-lg flex justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold mb-2">Notícias em Tempo Real</h2>
-          <p className="text-blue-100 text-sm opacity-90">Monitoramento ativo do PAA e Agricultura Familiar via Google Search</p>
+          <div className="text-blue-100 text-sm opacity-90 flex items-center gap-2">
+            <span>Monitoramento PAA</span>
+            {lastUpdated && (
+                <>
+                    <span>•</span>
+                    <span className="bg-blue-900/30 px-2 py-0.5 rounded text-xs border border-blue-400/30">
+                        Atualizado: {lastUpdated}
+                    </span>
+                </>
+            )}
+            {source === 'cache' && !loading && (
+                <span className="material-icons-round text-xs opacity-70" title="Dados recuperados do histórico">history</span>
+            )}
+          </div>
         </div>
         <button 
-          onClick={fetchNews} 
+          onClick={handleLiveUpdate} 
           disabled={loading}
-          className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-all flex items-center gap-2 text-sm font-medium"
+          className="bg-white/20 hover:bg-white/30 text-white px-5 py-3 rounded-xl backdrop-blur-sm transition-all flex items-center gap-2 text-sm font-bold shadow-sm whitespace-nowrap"
         >
-          <span className={`material-icons-round ${loading ? 'animate-spin' : ''}`}>refresh</span>
-          {loading ? 'Atualizando...' : 'Atualizar'}
+          <span className={`material-icons-round ${loading ? 'animate-spin' : ''}`}>
+            {loading ? 'sync' : 'refresh'}
+          </span>
+          {loading ? 'Buscando Google...' : 'Atualizar Agora'}
         </button>
       </div>
       

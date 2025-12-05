@@ -3,20 +3,12 @@ import { SupabaseFile } from '../types';
 
 const BUCKET_NAME = 'src';
 
+// --- STORAGE FUNCTIONS ---
+
 export const listBucketFiles = async (bucketName: string, folderPath: string = ''): Promise<SupabaseFile[]> => {
   try {
-    // Supabase storage list expects prefix to NOT start with / usually, 
-    // and for 'src' bucket which acts as root for folders like 'infografico', 
-    // folderPath should be 'infografico' or 'infografico/'
-    
-    // Normalize prefix: remove leading slash, ensure trailing slash if not empty
     let prefix = folderPath.startsWith('/') ? folderPath.substring(1) : folderPath;
-    if (prefix && !prefix.endsWith('/')) {
-        // If we are looking for a folder content, it usually needs a trailing slash in some APIs,
-        // but Supabase list often takes just the folder name. 
-        // Let's try sending just the folder name first.
-    }
-
+    
     const response = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${bucketName}`, {
       method: 'POST',
       headers: {
@@ -30,7 +22,7 @@ export const listBucketFiles = async (bucketName: string, folderPath: string = '
         offset: 0,
         sortBy: {
           column: 'name',
-          order: 'desc', // Newest first usually better
+          order: 'desc', 
         },
       }),
     });
@@ -42,10 +34,9 @@ export const listBucketFiles = async (bucketName: string, folderPath: string = '
 
     const data = await response.json();
     
-    // Filter out placeholders and ensure we are getting files, not just the folder itself if returned
     return data.filter((file: SupabaseFile) => 
       !file.name.endsWith('.emptyFolderPlaceholder') && 
-      file.name !== prefix // Don't list the folder itself
+      file.name !== prefix 
     );
   } catch (error) {
     console.error("Supabase List Error:", error);
@@ -54,8 +45,6 @@ export const listBucketFiles = async (bucketName: string, folderPath: string = '
 };
 
 export const getFileUrl = (bucketName: string, fileName: string): string => {
-  // If fileName already contains the bucket info or full path, handle it.
-  // Standard supabase list returns "folder/file.ext" relative to bucket root.
   const path = fileName.startsWith('/') ? fileName.substring(1) : fileName;
   return `${SUPABASE_URL}/storage/v1/object/public/${bucketName}/${path}`;
 };
@@ -70,7 +59,6 @@ export const uploadBase64Image = async (base64Data: string, fileName: string): P
     const byteArray = new Uint8Array(byteNumbers);
     const blob = new Blob([byteArray], { type: 'image/png' });
 
-    // Upload specifically to 'generated' folder in 'src' bucket
     const path = `generated/${fileName}`;
     const url = `${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${path}`;
     
@@ -93,5 +81,66 @@ export const uploadBase64Image = async (base64Data: string, fileName: string): P
   } catch (error) {
     console.error("Supabase Upload Error:", error);
     return null;
+  }
+};
+
+// --- DATABASE FUNCTIONS (News Cache) ---
+
+export interface NewsCacheItem {
+  id: number;
+  topic: string;
+  content: string;
+  created_at: string;
+}
+
+export const fetchLatestNewsFromDB = async (topic: string): Promise<NewsCacheItem | null> => {
+  try {
+    // REST API call to get the latest item for a specific topic
+    const params = new URLSearchParams({
+      topic: `eq.${topic}`,
+      select: '*',
+      order: 'created_at.desc',
+      limit: '1'
+    });
+
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/news_cache?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) return null;
+    
+    const data = await response.json();
+    return data.length > 0 ? data[0] : null;
+  } catch (error) {
+    console.error("DB Fetch Error:", error);
+    return null;
+  }
+};
+
+export const saveNewsToDB = async (topic: string, content: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/news_cache`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        topic,
+        content
+      })
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error("DB Save Error:", error);
+    return false;
   }
 };
