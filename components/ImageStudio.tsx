@@ -9,10 +9,11 @@ export const ImageStudio: React.FC = () => {
   const [status, setStatus] = useState<string>('');
 
   const fetchGeneratedImages = async () => {
+    // List files inside the 'generated' folder of 'src' bucket
     const files = await listBucketFiles('src', 'generated');
-    // Sort logic can be added if files have metadata, otherwise relying on list order
-    // Supabase list default order is usually alphabetical
-    setGeneratedImages(files.reverse()); // Show newest first if they are named by timestamp
+    // Sort logic: Supabase usually returns oldest first or alphabetical. 
+    // We reverse to show newest first.
+    setGeneratedImages(files.reverse()); 
   };
 
   useEffect(() => {
@@ -113,8 +114,11 @@ export const ImageStudio: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {generatedImages.map((file) => {
-              // Ensure path construction matches listBucketFiles output
-              const url = getFileUrl('src', file.name);
+              // FIX: Ensure path matches what listBucketFiles implies.
+              // listBucketFiles('src', 'generated') returns file names relative to that folder usually.
+              // We need to construct 'generated/filename' for the full path URL.
+              const fullPath = file.name.includes('/') ? file.name : `generated/${file.name}`;
+              const url = getFileUrl('src', fullPath);
 
               return (
                 <div key={file.id} className="group relative aspect-square bg-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-200">

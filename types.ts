@@ -1,6 +1,9 @@
 export enum Section {
   DASHBOARD = 'dashboard',
   INSTITUTIONAL = 'institutional',
+  TECHNICAL_DATA = 'technical_data', // Nova
+  BUSINESS_RULES = 'business_rules', // Nova
+  STRATEGIC = 'strategic', // Nova
   GOVERNANCE = 'governance',
   LEGISLATION = 'legislation',
   MEDIA = 'media',
