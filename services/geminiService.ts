@@ -108,7 +108,7 @@ export const generateCreativePrompt = async (userTopic?: string, mode: 'art' | '
   ];
 
   const infoFallbacks = [
-    "A clean, flat design infographic showing the flow of food from farm to school, with arrows and icons. White background, vector style.",
+    "A clean, flat design infographic showing the flow of food from farm to school. Title: 'PAA Flow'. White background, vector style.",
     "A mind map diagram showing 'PAA Data Governance' with nodes for 'MDS', 'Conab', and 'Teradata'. Professional corporate presentation style.",
     "A timeline infographic illustrating the PAA Legislation history, minimal vector art, high contrast."
   ];
@@ -128,18 +128,20 @@ export const generateCreativePrompt = async (userTopic?: string, mode: 'art' | '
         Atue como um Especialista em Visualização de Dados e Design de Informação.
         Sua missão é criar um prompt visual DETALHADO em INGLÊS para gerar um INFOGRÁFICO, MAPA MENTAL ou FLUXOGRAMA.
         
-        O prompt deve instruir o gerador de imagem a:
-        1. Usar estilo "Flat Vector", "Clean Design" ou "Corporate Infographic".
-        2. Fundo branco ou neutro para legibilidade.
-        3. Representar visualmente conexões, setas, ícones e hierarquia.
-        4. Evitar excesso de texto, focando em "Visual Storytelling".
+        REGRAS CRÍTICAS PARA INFOGRÁFICOS:
+        1. Use estilos: "Flat Vector", "Clean Design", "Corporate Infographic" ou "Minimalist Chart".
+        2. Fundo branco ou neutro sólido para legibilidade máxima.
+        3. Visual Storytelling: Use ícones, setas e hierarquia visual clara.
+        4. **PORTUGUÊS OBRIGATÓRIO:** Instrua explicitamente o gerador a escrever quaisquer títulos ou rótulos visíveis em PORTUGUÊS (PT-BR).
+           - Exemplo: "Include the title 'Ciclo do PAA' in bold typography".
+           - Exemplo: "Label the steps as 'Adesão', 'Entrega' and 'Pagamento'".
         
-        Use este contexto técnico do PAA para enriquecer o prompt: ${platformContext}
+        Contexto técnico do PAA: ${platformContext}
       `;
       
       contextInstruction = userTopic 
-        ? `Crie um prompt para um infográfico sobre: "${userTopic}".`
-        : `Escolha um destes temas técnicos para o infográfico: Fluxo de Dados (Adesão -> Pagamento), Marcos Legais do PAA, ou Governança de Dados (Teradata/SISPAA).`;
+        ? `Crie um prompt para um infográfico detalhando: "${userTopic}". Garanta que os termos técnicos estejam em Português.`
+        : `Escolha um tema: Fluxo de Dados (Adesão -> Pagamento), Governança (MDS/Conab) ou Inclusão Social. Descreva os rótulos em Português.`;
     
     } else {
       // Art Mode
@@ -147,11 +149,12 @@ export const generateCreativePrompt = async (userTopic?: string, mode: 'art' | '
         Atue como um Diretor de Arte Criativo.
         Sua missão é criar um prompt visual em INGLÊS para gerar uma imagem artística, fotografia ou ilustração 3D.
         Estilos: Fotorealismo, 3D Pixar, Isométrico, Futurista ou Minimalista.
+        Foque na estética visual, iluminação e composição.
       `;
       
       contextInstruction = userTopic 
         ? `O usuário forneceu este tema: "${userTopic}". Crie uma descrição artística visualmente impactante.`
-        : `Escolha ALEATORIAMENTE um tema entre: Tecnologia no Campo, Agricultura Familiar Brasileira, ou Alimentos Frescos.`;
+        : `Escolha ALEATORIAMENTE um tema entre: Tecnologia no Campo Brasileiro, Agricultura Familiar Moderna, ou Alimentos Frescos e Dados.`;
     }
 
     const response = await ai.models.generateContent({

@@ -84,6 +84,26 @@ export const uploadBase64Image = async (base64Data: string, fileName: string): P
   }
 };
 
+export const deleteFile = async (bucketName: string, fileName: string): Promise<boolean> => {
+  try {
+    // Ensure full path (if file is in a folder, fileName should include it)
+    const path = fileName.startsWith('/') ? fileName.substring(1) : fileName;
+    
+    const response = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucketName}/${path}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY,
+      },
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error("Supabase Delete Error:", error);
+    return false;
+  }
+};
+
 // --- DATABASE FUNCTIONS (News Cache) ---
 
 export interface NewsCacheItem {

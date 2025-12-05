@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { generateImage, generateCreativePrompt } from '../services/geminiService';
-import { uploadBase64Image, listBucketFiles, getFileUrl } from '../services/supabaseService';
+import { uploadBase64Image, listBucketFiles, getFileUrl, deleteFile } from '../services/supabaseService';
 import { SupabaseFile } from '../types';
 
 export const ImageStudio: React.FC = () => {
@@ -9,6 +9,7 @@ export const ImageStudio: React.FC = () => {
   const [status, setStatus] = useState<string>('');
   const [customPrompt, setCustomPrompt] = useState('');
   const [mode, setMode] = useState<'art' | 'infographic'>('art');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchGeneratedImages = async () => {
     // List files inside the 'generated' folder of 'src' bucket
@@ -60,6 +61,21 @@ export const ImageStudio: React.FC = () => {
       setLoading(false);
       setTimeout(() => setStatus(''), 5000);
     }
+  };
+
+  const handleDelete = async (file: SupabaseFile) => {
+    if (!window.confirm("Tem certeza que deseja excluir esta imagem permanentemente?")) return;
+
+    setDeletingId(file.id);
+    const fullPath = file.name.includes('/') ? file.name : `generated/${file.name}`;
+    
+    const success = await deleteFile('src', fullPath);
+    if (success) {
+      setGeneratedImages(prev => prev.filter(item => item.id !== file.id));
+    } else {
+      alert("Erro ao excluir arquivo.");
+    }
+    setDeletingId(null);
   };
 
   return (
@@ -176,9 +192,10 @@ export const ImageStudio: React.FC = () => {
               const fullPath = file.name.includes('/') ? file.name : `generated/${file.name}`;
               const url = getFileUrl('src', fullPath);
               const isInfo = file.name.includes('infographic');
+              const isDeleting = deletingId === file.id;
 
               return (
-                <div key={file.id} className="group relative aspect-square bg-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100">
+                <div key={file.id} className={`group relative aspect-square bg-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 ${isDeleting ? 'opacity-50 pointer-events-none' : ''}`}>
                   <img 
                     src={url} 
                     alt={file.name} 
@@ -187,10 +204,12 @@ export const ImageStudio: React.FC = () => {
                   />
                   {/* Badge for Type */}
                   {isInfo && (
-                    <div className="absolute top-2 right-2 bg-blue-600/90 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
+                    <div className="absolute top-2 right-2 bg-blue-600/90 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm backdrop-blur-sm z-10">
                       Info
                     </div>
                   )}
+                  
+                  {/* Actions Overlay */}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
                     <a 
                       href={url} 
@@ -201,6 +220,19 @@ export const ImageStudio: React.FC = () => {
                     >
                       <span className="material-icons-round">fullscreen</span>
                     </a>
+                    
+                    <button 
+                      onClick={() => handleDelete(file)}
+                      disabled={isDeleting}
+                      className="w-10 h-10 bg-red-500/80 backdrop-blur-md border border-red-400/50 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                      title="Excluir imagem"
+                    >
+                      {isDeleting ? (
+                        <span className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></span>
+                      ) : (
+                        <span className="material-icons-round">delete</span>
+                      )}
+                    </button>
                   </div>
                 </div>
               );
