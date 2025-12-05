@@ -74,7 +74,8 @@ export const generateImage = async (prompt: string): Promise<string | null> => {
 
         for (const part of response.candidates?.[0]?.content?.parts || []) {
             if (part.inlineData) {
-                return part.inlineData.data; // Return raw base64 for uploading
+                // Ensure we return null if data is undefined, fixing type mismatch
+                return part.inlineData.data || null; 
             }
         }
         return null;
