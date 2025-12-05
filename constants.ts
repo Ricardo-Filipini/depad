@@ -1,11 +1,43 @@
 import { PAAInfo } from './types';
 
-// Environment Variables with Fallbacks
-export const SUPABASE_URL = (import.meta as any).env?.VITE_SUPABASE_URL || "https://xsfymwerlwsjofsrdpcb.supabase.co";
-export const SUPABASE_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzZnltd2VybHdzam9mc3JkcGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NzI3NTMsImV4cCI6MjA4MDM0ODc1M30.DdvxmeUfdFueFyaj0Fl1x-2qGdDfYZrQ103POCHaMmY";
+// Helper function to safely get env vars without crashing in browser if process is undefined
+const getEnv = (key: string, viteKey: string) => {
+  // 1. Try Vite's import.meta.env (Preferred for Client Side)
+  if ((import.meta as any).env) {
+    if ((import.meta as any).env[viteKey]) return (import.meta as any).env[viteKey];
+    if ((import.meta as any).env[key]) return (import.meta as any).env[key];
+  }
+  
+  // 2. Try process.env (Build time / Node fallback / Container Injection)
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+       // @ts-ignore
+       if (process.env[key]) return process.env[key];
+       // @ts-ignore
+       if (process.env[viteKey]) return process.env[viteKey];
+    }
+  } catch (e) {
+    // Ignore errors accessing process
+  }
 
-// Gemini Key: Check VITE env, then process.env (for some build systems), then fallback (managed externally usually)
-export const GEMINI_API_KEY = (import.meta as any).env?.VITE_GEMINI_KEY || (process as any).env?.API_KEY || process.env.API_KEY;
+  return undefined;
+};
+
+// Fallbacks Hardcoded (Safety Net)
+const FALLBACK_SUPABASE_URL = "https://xsfymwerlwsjofsrdpcb.supabase.co";
+const FALLBACK_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzZnltd2VybHdzam9mc3JkcGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NzI3NTMsImV4cCI6MjA4MDM0ODc1M30.DdvxmeUfdFueFyaj0Fl1x-2qGdDfYZrQ103POCHaMmY";
+
+// Exported Constants with Priority: Env Var -> Fallback
+export const SUPABASE_URL = getEnv('SUPABASE_URL', 'VITE_SUPABASE_URL') || FALLBACK_SUPABASE_URL;
+export const SUPABASE_KEY = getEnv('SUPABASE_ANON_KEY', 'VITE_SUPABASE_ANON_KEY') || FALLBACK_SUPABASE_KEY;
+
+// Gemini Key: Check GEMINI_API_KEY, VITE_GEMINI_API_KEY, or standard API_KEY (Container)
+export const GEMINI_API_KEY = 
+  getEnv('GEMINI_API_KEY', 'VITE_GEMINI_API_KEY') || 
+  getEnv('API_KEY', 'VITE_GEMINI_KEY') || 
+  // Fallback to process.env.API_KEY specifically for the Google IDX/Container environment if the helper missed it
+  (typeof process !== 'undefined' ? process.env.API_KEY : undefined);
+
 
 export const PAA_CONTENT: PAAInfo[] = [
   {
