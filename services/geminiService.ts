@@ -100,7 +100,7 @@ export const generateImage = async (prompt: string): Promise<string | null> => {
     }
 };
 
-export const generateCreativePrompt = async (): Promise<string> => {
+export const generateCreativePrompt = async (userTopic?: string): Promise<string> => {
   const fallbacks = [
     "A futuristic digital dashboard displaying agricultural data maps of Brazil, glowing holographic interface, professional UX design, 8k resolution.",
     "Isometric 3D illustration of a farm connected to a cloud server, showing data flowing from vegetables to a database, colorful and clean.",
@@ -112,30 +112,25 @@ export const generateCreativePrompt = async (): Promise<string> => {
     const ai = getClient();
     if (!ai) return fallbacks[0];
 
+    // Build the instruction based on whether userTopic exists
+    const contextInstruction = userTopic 
+      ? `O usuário forneceu este tema específico: "${userTopic}". Crie um prompt visual baseado estritamente nisso, mas melhore a descrição artística.`
+      : `Escolha ALEATORIAMENTE um tema entre: Fluxo Logístico do DEPAD, Tecnologia de Dados, Leis/Governança, Agricultores Familiares ou Alimentos Frescos.`;
+
     // Flash is perfectly capable of generating prompts and is much faster
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: `
         Atue como um Diretor de Arte Criativo para a plataforma de dados do PAA (Programa de Aquisição de Alimentos).
-        Sua missão é criar um prompt visual em INGLÊS para gerar uma imagem ÚNICA e VARIADA.
+        Sua missão é criar um prompt visual em INGLÊS para gerar uma imagem.
 
-        1. Escolha ALEATORIAMENTE um destes TEMAS:
-           - Fluxo Logístico do DEPAD: Caminhões, armazéns, caixas de alimentos sendo organizadas, transporte.
-           - Tecnologia de Dados: Servidores, fibra óptica conectada a plantações, hologramas de gráficos sobre o mapa do Brasil.
-           - Governança e Leis: Uma representação abstrata ou infográfico 3D sobre leis protegendo a agricultura.
-           - O Humano: Agricultores familiares (foco em diversidade: mulheres, indígenas, quilombolas) usando tecnologia ou colhendo.
-           - Alimentos Frescos: Close-up macro de frutas e verduras brasileiras com iluminação de estúdio.
+        CONTEXTO:
+        ${contextInstruction}
 
-        2. Escolha ALEATORIAMENTE um destes ESTILOS VISUAIS:
-           - Fotorealismo estilo National Geographic (Cinematic Lighting).
-           - Ilustração 3D estilo Pixar/Disney (Fofo e colorido).
-           - Arte Vetorial Isométrica (Estilo Tech Startup, limpo, fundo sólido).
-           - Futurista/Cyberpunk (Neon, dados brilhantes, dark mode).
-           - Infográfico Minimalista (Flat design, cores pastéis).
-           - Pintura a Óleo Clássica (Textura de tela, dramático).
+        DIRETRIZES DE ESTILO:
+        Escolha um estilo visual adequado (Fotorealismo, 3D Pixar, Isométrico, Futurista ou Minimalista).
+        Descreva a cena, a iluminação e o ângulo da câmera.
 
-        3. Gere o prompt descrevendo a cena, a iluminação, o ângulo da câmera e o estilo escolhido.
-        
         RETORNE APENAS O PROMPT EM INGLÊS. NÃO ADICIONE NENHUM TEXTO ANTES OU DEPOIS.
       `,
     });
