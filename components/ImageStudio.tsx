@@ -22,23 +22,24 @@ export const ImageStudio: React.FC = () => {
 
   const handleAutoGenerate = async () => {
     setLoading(true);
-    setStatus('💡 Criando prompt criativo com Gemini...');
+    setStatus('🎲 Sorteando tema e estilo visual...');
     
     try {
       // 1. Generate Prompt
       const creativePrompt = await generateCreativePrompt();
-      setStatus(`🎨 Gerando imagem...`);
+      setStatus('🎨 Pincelando pixels com IA...');
+      console.log("Prompt Gerado:", creativePrompt); // Debug
 
       // 2. Generate Image
       const base64Data = await generateImage(creativePrompt);
       
       if (base64Data) {
-        setStatus('💾 Salvando imagem no Supabase...');
+        setStatus('💾 Revelando e salvando imagem...');
         const fileName = `paa_creative_${Date.now()}.png`;
         const publicUrl = await uploadBase64Image(base64Data, fileName);
         
         if (publicUrl) {
-          setStatus('✅ Concluído! Atualizando galeria...');
+          setStatus('✨ Obra de arte concluída!');
           await fetchGeneratedImages();
         } else {
           setStatus('❌ Erro ao salvar imagem no banco.');
@@ -69,7 +70,7 @@ export const ImageStudio: React.FC = () => {
         
         <h2 className="text-3xl font-bold text-gray-900 mb-3">Estúdio Criativo PAA</h2>
         <p className="text-gray-500 mb-8 max-w-lg mx-auto leading-relaxed">
-          Nossa IA gera ilustrações únicas sobre agricultura familiar e segurança alimentar. Clique abaixo e veja a mágica acontecer.
+          Gere visualizações únicas sobre o ecossistema do PAA. Nossa IA sorteia aleatoriamente entre infográficos de dados, cenas logísticas, agricultura familiar ou arte abstrata.
         </p>
 
         <button
@@ -84,8 +85,8 @@ export const ImageStudio: React.FC = () => {
             </>
           ) : (
             <>
-              <span className="material-icons-round">shutter_speed</span>
-              <span>Gerar Nova Arte</span>
+              <span className="material-icons-round">shuffle</span>
+              <span>Surpreenda-me</span>
             </>
           )}
         </button>
